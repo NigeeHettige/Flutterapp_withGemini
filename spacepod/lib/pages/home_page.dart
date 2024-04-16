@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:spacepod/bloc/chat_bloc.dart';
 import 'package:spacepod/models/chat_message_model.dart';
 
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
       listener: (context, state) {},
       builder: (context, state) {
         switch (state.runtimeType) {
-          case const (ChatSuccessState) :
+          case const (ChatSuccessState):
             List<ChatMessageModel> messages =
                 (state as ChatSuccessState).messages;
             return Container(
@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
                     opacity: 0.6),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -60,18 +61,69 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
-                  Expanded(child: ListView.builder(
-                    itemCount: messages.length,
-                    itemBuilder: (context,index){
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16),color: const Color.fromARGB(255, 170, 168, 166).withOpacity(0.1)),
-                      child: Text(messages[index].parts.first.text,style: const TextStyle(fontFamily: 'CENTURION',fontWeight: FontWeight.bold,color: Colors.white),));
-                  })),
+                  Expanded(
+                      child: ListView.builder(
+                          itemCount: messages.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                                margin: const EdgeInsets.only(bottom: 12,left:16,right: 16 ),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    color:
+                                        const Color.fromARGB(255, 170, 168, 166)
+                                            .withOpacity(0.1)),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      messages[index].role == "user"
+                                          ? "user"
+                                          : "spacebot",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: messages[index].role == "user"
+                                              ? const Color.fromARGB(
+                                                  255, 170, 168, 166)
+                                              : const Color.fromARGB(
+                                                  255, 144, 233, 203)),
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    Text(
+                                      messages[index].parts.first.text,
+                                      style: const TextStyle(
+                                        fontFamily: 'CENTURION',
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                  ],
+                                ));
+                          })),
+                  if (chatBloc.generating)
+                    Row(
+                      children: [
+                        Container(
+                          height: 100,
+                          width: 100,
+                          child: Lottie.asset("assets/loader.json"),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        const Text(
+                          "Loading...",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 30, horizontal: 16),
+                        vertical: 30, horizontal: 36),
                     child: Row(
                       children: [
                         Expanded(
@@ -88,6 +140,12 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(100),
                               ),
                               fillColor: Colors.white,
+                              hintText: "Ask something from spacebot",
+                              hintStyle: const TextStyle(
+                                color: Color.fromARGB(255, 150, 149, 149),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                              ),
                               filled: true,
                             ),
                             style: const TextStyle(
@@ -99,11 +157,12 @@ class _HomePageState extends State<HomePage> {
                         ),
                         const SizedBox(width: 12),
                         InkWell(
-                          onTap: (){
-                            if(textEditingController.text.isNotEmpty){
+                          onTap: () {
+                            if (textEditingController.text.isNotEmpty) {
                               String text = textEditingController.text;
                               textEditingController.clear();
-                              chatBloc.add(ChatGenerateNewTextMessageEvent(inputMessage: text));
+                              chatBloc.add(ChatGenerateNewTextMessageEvent(
+                                  inputMessage: text));
                             }
                           },
                           child: CircleAvatar(
@@ -129,7 +188,7 @@ class _HomePageState extends State<HomePage> {
             );
 
           default:
-            return  const SizedBox();
+            return const SizedBox();
         }
       },
     ));
