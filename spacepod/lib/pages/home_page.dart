@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                   if (chatBloc.generating)
                     Row(
                       children: [
-                        Container(
+                        SizedBox(
                           height: 100,
                           width: 100,
                           child: Lottie.asset("assets/loader.json"),
